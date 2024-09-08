@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Background Calendar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/halimun" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/anantason" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #111;
+            color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: relative;
+        }
+        .calendar-container {
+            position: absolute;
+            top: 25%;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0);
+            max-width: 90vw;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+        .calendar .day-name, .calendar .day {
+            padding: 10px;
+        }
+        .calendar .day-name {
+            font-family: 'Agrandir Wide', sans-serif;
+            font-weight: bold;
+            font-size: 1.7em;
+        }
+        .calendar .day {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5em;
+            padding: 15px;
+        }
+        .day-names {
+            grid-column: span 7;
+            display: flex;
+            justify-content: space-around;
+            font-family: 'Agrandir Wide', sans-serif;
+            font-size: 2.8em;
+            margin-bottom: 3px;
+        }
+        .current-day-name {
+            grid-column: span 7;
+            font-family: 'Anantason', serif;
+            font-weight: bold;
+            font-size: 8.0em;
+            margin-bottom: 75px;
+        }
+        .month-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: auto;
+            text-align: center;
+        }
+        .month {
+            font-family: 'Noto Serif Display', serif;
+            font-size: 40em;
+            color: #ece6db;
+            line-height: 1.3;
+            margin: 0;
+            padding: 0;
+            letter-spacing: -0.11em;
+            font-weight: 100;
+            cursor: pointer;
+            margin-bottom: 20px;
+            text-transform: lowercase;
+            transform: scaleY(1.4);
+        }
+        .year {
+            font-family: 'Anca Coder', monospace;
+            font-size: 1.5em;
+            color: #ece6db;
+            margin-top: 10px;
+        }
+        .nav-buttons {
+            position: absolute;
+            top: 10%;
+            left: 0;
+            display: flex;
+            justify-content: flex-start;
+            width: 100px;
+            margin: 20px;
+            z-index: 10;
+        }
+        .nav-icon {
+            background-color: transparent;
+            color: #ece6db;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 1.0em;
+            margin: 0 5px;
+        }
+        .nav-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sunday {
+            color: pink;
+        }
+        .clock-container {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 10;
+        }
+        .clock {
+            font-family: 'Arial', sans-serif;
+            font-size: 4em;
+            color: #ece6db;
+            margin-bottom: 10px;
+        }
+        .timezone {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.2em;
+            color: #ece6db;
+        }
+        @media (max-width: 768px) {
+            .calendar .day-name {
+                font-size: 1.4em;
+            }
+            .calendar .day {
+                font-size: 1.2em;
+                padding: 10px;
+            }
+            .day-names {
+                font-size: 2em;
+            }
+            .current-day-name {
+                font-size: 5em;
+            }
+            .month {
+                font-size: 25em;
+            }
+            .year {
+                font-size: 1.2em;
+            }
+            .clock {
+                font-size: 3em;
+            }
+            .timezone {
+                font-size: 1em;
+            }
+        }
+        @media (max-width: 480px) {
+            .calendar .day-name {
+                font-size: 1.2em;
+            }
+            .calendar .day {
+                font-size: 1em;
+                padding: 8px;
+            }
+            .day-names {
+                font-size: 1.5em;
+            }
+            .current-day-name {
+                font-size: 4em;
+            }
+            .month {
+                font-size: 15em;
+            }
+            .year {
+                font-size: 1em;
+            }
+            .clock {
+                font-size: 2.5em;
+            }
+            .timezone {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="clock" id="clock">--:--:--</div>
+        <div class="timezone" id="timezone">Timezone</div>
+    </div>
+    <div class="month-container">
+        <div class="month" id="month">Oct</div>
+    </div>
+    <div class="calendar-container">
+        <div class="left-section">
+            <div class="current-day-name" id="current-day-name">01</div>
+            <div class="calendar">
+                <div class="day-name sunday">S</div>
+                <div class="day-name">M</div>
+                <div class="day-name">T</div>
+                <div class="day-name">W</div>
+                <div class="day-name">T</div>
+                <div class="day-name">F</div>
+                <div class="day-name">S</div>
+            </div>
+            <div class="year" id="year">2023</div>
+        </div>
+    </div>
+    <div class="nav-buttons">
+        <button class="nav-icon" id="prev-month"><i class="fas fa-chevron-left"></i></button>
+        <button class="nav-icon" id="next-month"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <script>
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const fullDayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const monthImages = [
+            'images/jan.jpg',
+            'images/feb.jpg',
+            'images/mar.jpg',
+            'images/apr.jpg',
+            'images/may.jpg',
+            'images/jun.jpg',
+            'images/jul.jpg',
+            'images/aug.jpg',
+            'images/sep.jpg',
+            'images/oct.jpg',
+            'images/nov.jpg',
+            'images/dec.jpg'
+        ];
+        let today = new Date();
+        let currentYear = today.getFullYear();
+        let currentMonth = today.getMonth();
+        let currentDay = today.getDate();
+        let currentWeekday = today.getDay();
+
+        function updateCalendar() {
+            const yearElement = document.getElementById('year');
+            const monthElement = document.getElementById('month');
+            const currentDayNameElement = document.getElementById('current-day-name');
+            const calendar = document.querySelector('.calendar');
+
+            yearElement.textContent = currentYear;
+            monthElement.textContent = monthNames[currentMonth];
+
+            const formattedDay = currentDay < 10 ? `0${currentDay}` : currentDay;
+            currentDayNameElement.textContent = formattedDay;
+
+            calendar.querySelectorAll('.day').forEach(day => day.remove());
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day';
+                calendar.appendChild(emptyDay);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const day = document.createElement('div');
+                day.className = 'day';
+                day.textContent = i;
+
+                if (i === currentDay) {
+                    day.classList.add('current-day');
+                }
+
+                const dayOfWeek = (firstDay + i - 1) % 7;
+                if (dayOfWeek === 0) {
+                    day.classList.add('sunday');
+                }
+
+                calendar.appendChild(day);
+            }
+
+            document.body.style.backgroundImage = `url('${monthImages[currentMonth]}')`;
+        }
+
+        function updateClock() {
+            const clockElement = document.getElementById('clock');
+            const timezoneElement = document.getElementById('timezone');
+            const options = { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const now = new Intl.DateTimeFormat('en-US', options).format(new Date());
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            clockElement.textContent = now;
+            timezoneElement.textContent = timezone;
+        }
+
+        document.getElementById('prev-month').addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            updateCalendar();
+        });
+
+        document.getElementById('next-month').addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            updateCalendar();
+        });
+
+        setInterval(updateClock, 1000);
+
+        updateCalendar();
+        updateClock();
+    </script>
+</body>
+</html>
